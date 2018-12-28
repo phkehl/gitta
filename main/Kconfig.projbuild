@@ -1,0 +1,98 @@
+menu "GITTA Tschenggins Laempli Configuration"
+
+config FF_NAME
+    string "name for prefixing logging outpit, nvs section, etc."
+    default "gitta"
+    help
+        A short string that is used to prefix any logging output, naming the NVS section, and other things.
+
+config FF_MON_PRIO
+    int "system monitor task priority"
+    default 9
+
+config FF_CONSOLE_PRIO
+    int "console task priority"
+    default 8
+
+config FF_WIFI_PRIO
+    int "wifi task priority"
+    default 7
+
+config FF_LEDS_PRIO
+    int "leds task priority"
+    default 4
+
+config FF_JENKINS_PRIO
+    int "jenkins task priority"
+    default 4
+
+config FF_WIFI_RECONNECT_INTERVAL
+    int "time [s] to wait before reconnecting"
+    default 10
+
+config FF_WIFI_RECONNECT_INTERVAL_SLOW
+    int "time [s] to wait before reconnecting after immediate failure"
+    default 300
+
+config FF_WIFI_STABLE_CONN_THRS
+    int "time [s] after which to consider the connection stable"
+    default 300
+
+config FF_BACKEND_URL_MAXLEN
+    int "maximum length of backend URL"
+    default 500
+
+config FF_ENV_MONITOR_DEFAULT
+    string "system monitor period in [s]"
+    default "5.0"
+
+config FF_ENV_DEBUG_DEFAULT
+    string "debugging output on or off"
+    default "off"
+
+config FF_ENV_SSID_DEFAULT
+    string "default SSID"
+    default ""
+
+config FF_ENV_PASS_DEFAULT
+    string "default password"
+    default ""
+
+config FF_ENV_BACKEND_DEFAULT
+    string "default backend url"
+    default ""
+
+config FF_STATUS_LED_GPIO
+    int "GPIO for the status LED"
+    default 2
+    help
+        On the Arduino MKR1010 there are LEDs on the following NINA-W102 GPIOs: 26 = RED, 25 = GREEN, 27 = BLUE.
+        On the Wemos Mini32 (and many others) the LED is on GPIO 2.
+
+config FF_STATUS_EFFECT_GPIO
+    int "GPIO for triggering effect (Chewbacca)"
+    default 27
+
+config FF_STATUS_EFFECT_DURATION
+    int "effect duration [100ms]"
+    default 25
+
+config FF_TONE_GPIO
+    int "GPIO for the speaker"
+    default 25
+
+config FF_JENKINS_MAX_CH
+    int "maximum number of channels (jobs) we can track"
+    default 20
+
+config FF_LEDS_NUM
+    int "number of LEDs"
+    default 20
+
+config FF_LEDS_SPI_SPEED
+    int "SPI speed [Hz]"
+    default 2000000
+    help
+        Must be fast enough for all data to go through in less than 10ms.
+
+endmenu

@@ -1,0 +1,8 @@
+build
+*~
+esp-idf
+xtensa-esp32-elf
+docs/espressif-esp-idf-latest
+sdkconfig.old
+sdkconfig
+NOTES
