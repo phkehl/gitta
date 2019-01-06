@@ -3,7 +3,7 @@
 
 ####################################################################################################
 
-$(info PATH=$(PATH))
+#$(info PATH=$(PATH))
 ifeq ($(findstring /xtensa-esp32-elf,$(PATH)),)
 $(error Please add /path/to/xtensa-esp32-elf to your $$PATH)
 endif
@@ -35,3 +35,15 @@ include $(IDF_PATH)/make/project.mk
 distclean:
 	@rm -rf build sdkconfig sdkconfig.old
 
+####################################################################################################
+
+OPENOCDDIR := /home/flip/sandbox/openocd-esp32
+.PHONY: ocd
+ocd:
+	$(OPENOCDDIR)/bin/openocd -s $(OPENOCDDIR)/share/openocd/scripts -f $(PROJECT_PATH)/tools/openocd-mini32-jlink.cfg
+
+.PHONY: gdb
+gdb:
+	xtensa-esp32-elf-gdb -x $(PROJECT_PATH)/tools/gdbinit $(BUILD_DIR_BASE)/$(PROJECT_NAME).elf
+
+####################################################################################################

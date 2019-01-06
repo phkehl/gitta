@@ -290,8 +290,8 @@ void sBackendProcessStatus(char *resp, const int respLen)
     // look for results
     if (okay)
     {
-        // look for response result
-        for (int ix = 0; ix < numTokens; ix++)
+        // look for response result (starting at 2nd token)
+        for (int ix = 1; ix < numTokens; ix++)
         {
             const jsmntok_t *pkTok = &pTokens[ix];
             // top-level array, size 1 or 6
@@ -353,9 +353,16 @@ void sBackendProcessStatus(char *resp, const int respLen)
                     okay = false;
                     break;
                 }
+                // else:  pkTok->size == 1 --> deactivated channel
 
                 // send info the Jenkins task
                 jenkinsSetInfo(&jInfo);
+            }
+            // not an array, unknown number of tokens
+            else
+            {
+                WARNING("backend: json unexpected %d %d", pkTok->type, pkTok->size);
+                okay = false;
             }
         }
     }

@@ -65,13 +65,18 @@ __INLINE void debugUnlock(void)
     xSemaphoreGive(sDebugMutex);
 }
 
-void debugAssert(const char *file, const int line, const char *func, const char *expr)
+void debugAssert(const esp_err_t err, const char *func, const char *expr)
 {
     const char *pAddr =  __builtin_return_address(0);
-    ERROR("Assertion failed: %s:%d:%s() at %p --  %s", file, line, func,
-        pAddr - 3, expr);
+    ERROR("%s in %s() at %p: %s", err == ESP_OK ? "Assertion failed" : esp_err_to_name(err),
+        func, pAddr - 3, expr);
     FLUSH();
     osSleep(2000);
+
+    // this can give us a backtrace
+    // ASSERT_ESP_OK( ESP_FAIL );
+
+    // this will just restart
     esp_restart();
 }
 

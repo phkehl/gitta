@@ -68,7 +68,7 @@ typedef struct JENKINS_INFO_s
     JENKINS_STATE_t  state;                        //!< job state
     char             job[JENKINS_JOBNAME_LEN];     //!< job name
     char             server[JENKINS_SERVER_LEN];   //!< server name
-    int32_t          time;                         //!< timestamp
+    uint32_t         time;                         //!< timestamp
 } JENKINS_INFO_t;
 
 //! update Jenkins job info

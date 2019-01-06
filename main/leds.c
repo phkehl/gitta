@@ -469,7 +469,7 @@ void ledsInit(void)
         .quadhd_io_num = -1,
         .max_transfer_sz = sizeof(sLedsSpiBuf),
     };
-    ESP_ERROR_CHECK( spi_bus_initialize(HSPI_HOST, &spiBusCfg, /* DMA channel: */ 1) );
+    ASSERT_ESP_OK( spi_bus_initialize(HSPI_HOST, &spiBusCfg, /* DMA channel: */ 1) );
     spi_device_interface_config_t spiDevIfCfg =
     {
         .clock_speed_hz = CONFIG_FF_LEDS_SPI_SPEED,
@@ -477,8 +477,8 @@ void ledsInit(void)
         .spics_io_num   = -1,
         .queue_size     = 1,
     };
-    ESP_ERROR_CHECK( spi_bus_add_device(HSPI_HOST, &spiDevIfCfg, &spLedsSpiDevHandle) );
-    ESP_ERROR_CHECK( spLedsSpiDevHandle == NULL ? ESP_FAIL : ESP_OK );
+    ASSERT_ESP_OK( spi_bus_add_device(HSPI_HOST, &spiDevIfCfg, &spLedsSpiDevHandle) );
+    ASSERT_ESP_OK( spLedsSpiDevHandle == NULL ? ESP_FAIL : ESP_OK );
 
     // send "clear all LEDs" for all known drivers, this should clear all LEDs in all(most all) setups
     sLedsClear();

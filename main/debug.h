@@ -51,9 +51,13 @@ void debugUnlock(void);
 //! flush all output
 #define FLUSH() fflush(stdout)
 
-void debugAssert(const char *file, const int line, const char *func, const char *expr);
+void debugAssert(const esp_err_t err, const char *func, const char *expr);
 
-#define ASSERT(expr) (expr) ? (void)0 : debugAssert(__FILE__, __LINE__, __FUNCTION__, #expr)
+#define ASSERT(expr) (expr) ? (void)0 : debugAssert(ESP_OK, __FUNCTION__, #expr)
+
+#define ASSERT_ESP_OK(expr) do { const esp_err_t __err = (expr); if (__err != ESP_OK) { debugAssert(__err, __FUNCTION__, #expr); } } while (0)
+
+
 
 // (intptr_t)__builtin_return_address(0) - 3
 #endif // __DEBUG_H__

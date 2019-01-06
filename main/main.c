@@ -81,6 +81,7 @@ void app_main()
     monStart();
 
     // experiments
+    //exDoNothing();
     //exToggleSpivPins();
     //exSendSpiv();
     //exStatusLedTest();

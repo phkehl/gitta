@@ -286,13 +286,13 @@ void toneInit(void)
     gpio_set_level(      TONE_GPIO, false);
 
     // disable and mask interrupt
-    ESP_ERROR_CHECK( timer_disable_intr(TONE_TIMER_GROUP, TONE_TIMER_IX) );
+    ASSERT_ESP_OK( timer_disable_intr(TONE_TIMER_GROUP, TONE_TIMER_IX) );
 
     // stop timer
-    ESP_ERROR_CHECK( timer_pause(TONE_TIMER_GROUP, TONE_TIMER_IX) );
+    ASSERT_ESP_OK( timer_pause(TONE_TIMER_GROUP, TONE_TIMER_IX) );
 
     // attach ISR
-    ESP_ERROR_CHECK( timer_isr_register(TONE_TIMER_GROUP, TONE_TIMER_IX, sToneIsr, NULL, ESP_INTR_FLAG_IRAM, NULL) );
+    ASSERT_ESP_OK( timer_isr_register(TONE_TIMER_GROUP, TONE_TIMER_IX, sToneIsr, NULL, ESP_INTR_FLAG_IRAM, NULL) );
 }
 
 

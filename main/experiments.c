@@ -4,6 +4,15 @@
 #include "status.h"
 #include "experiments.h"
 
+void exDoNothing(void)
+{
+    while (true)
+    {
+        DEBUG("nothing...");
+        osSleep(987);
+    }
+}
+
 #define PIN_CLK 18 // SPIV_CLK/GPIO18 --> PA15 (29)
 #define PIN_DO  19 // SPIV_DO/GPIO19  --> PA14 (28)
 void exToggleSpivPins(void)
@@ -52,7 +61,7 @@ void exSendSpiv(void)
         .quadhd_io_num = -1,
         .max_transfer_sz = 100,
     };
-    ESP_ERROR_CHECK( spi_bus_initialize(HSPI_HOST, &spiBusCfg, 1) );
+    ASSERT_ESP_OK( spi_bus_initialize(HSPI_HOST, &spiBusCfg, 1) );
 
     spi_device_interface_config_t spiDevIfCfg =
     {
@@ -62,7 +71,7 @@ void exSendSpiv(void)
         .queue_size     = 1,
     };
     spi_device_handle_t pSpiDevHandle;
-    ESP_ERROR_CHECK( spi_bus_add_device(HSPI_HOST, &spiDevIfCfg, &pSpiDevHandle) );
+    ASSERT_ESP_OK( spi_bus_add_device(HSPI_HOST, &spiDevIfCfg, &pSpiDevHandle) );
 
     DRAM_ATTR WORD_ALIGNED_ATTR static uint8_t data[] =
     {
@@ -157,9 +166,9 @@ void exTone(void)
     gpio_set_direction(  TONE_GPIO, GPIO_MODE_OUTPUT);
     gpio_set_level(      TONE_GPIO, false);
 
-    ESP_ERROR_CHECK( timer_disable_intr(TONE_TIMER_GROUP, TONE_TIMER_IX) );
-    ESP_ERROR_CHECK( timer_pause(TONE_TIMER_GROUP, TONE_TIMER_IX) );
-    ESP_ERROR_CHECK( timer_isr_register(TONE_TIMER_GROUP, TONE_TIMER_IX, sToneIsr, NULL, ESP_INTR_FLAG_IRAM, NULL) );
+    ASSERT_ESP_OK( timer_disable_intr(TONE_TIMER_GROUP, TONE_TIMER_IX) );
+    ASSERT_ESP_OK( timer_pause(TONE_TIMER_GROUP, TONE_TIMER_IX) );
+    ASSERT_ESP_OK( timer_isr_register(TONE_TIMER_GROUP, TONE_TIMER_IX, sToneIsr, NULL, ESP_INTR_FLAG_IRAM, NULL) );
 
     const timer_config_t timerConfig =
     {
@@ -171,17 +180,17 @@ void exTone(void)
         .divider     = 2,
 
     };
-    ESP_ERROR_CHECK( timer_init(TONE_TIMER_GROUP, TONE_TIMER_IX, &timerConfig) );
-    ESP_ERROR_CHECK( timer_set_counter_value(TIMER_GROUP_0, TONE_TIMER_IX, 0) );
-    ESP_ERROR_CHECK( timer_enable_intr(TONE_TIMER_GROUP, TONE_TIMER_IX) );
+    ASSERT_ESP_OK( timer_init(TONE_TIMER_GROUP, TONE_TIMER_IX, &timerConfig) );
+    ASSERT_ESP_OK( timer_set_counter_value(TIMER_GROUP_0, TONE_TIMER_IX, 0) );
+    ASSERT_ESP_OK( timer_enable_intr(TONE_TIMER_GROUP, TONE_TIMER_IX) );
 
     const uint32_t freq = 400;
     //const uint32_t timerval = (TIMER_BASE_CLK / 1000000 * 500000) * 2  / freq;
     const uint32_t timerval = (TIMER_BASE_CLK / 2 / 2 / freq );
     DEBUG("timerval=%u", timerval); FLUSH();
 
-    ESP_ERROR_CHECK( timer_set_alarm_value(TONE_TIMER_GROUP, TONE_TIMER_IX, timerval) );
-    ESP_ERROR_CHECK( timer_start(TONE_TIMER_GROUP, TONE_TIMER_IX) );
+    ASSERT_ESP_OK( timer_set_alarm_value(TONE_TIMER_GROUP, TONE_TIMER_IX, timerval) );
+    ASSERT_ESP_OK( timer_start(TONE_TIMER_GROUP, TONE_TIMER_IX) );
 
 
     while (true)
@@ -286,12 +295,12 @@ static void sWifiScan(void)
 void exScanWifi(void)
 {
     const wifi_init_config_t wifiCfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK( esp_wifi_init(&wifiCfg) );
-    ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
-    //ESP_ERROR_CHECK( esp_wifi_set_auto_connect(false) );
-    ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
-    //ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_NULL) );
-    ESP_ERROR_CHECK( esp_wifi_start() );
+    ASSERT_ESP_OK( esp_wifi_init(&wifiCfg) );
+    ASSERT_ESP_OK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
+    //ASSERT_ESP_OK( esp_wifi_set_auto_connect(false) );
+    ASSERT_ESP_OK( esp_wifi_set_mode(WIFI_MODE_STA) );
+    //ASSERT_ESP_OK( esp_wifi_set_mode(WIFI_MODE_NULL) );
+    ASSERT_ESP_OK( esp_wifi_start() );
 
     sWifiScan();
     while (true)

@@ -91,6 +91,14 @@ static const char *sJenkinsResultToStr(const JENKINS_RESULT_t result)
     return "???";
 }
 
+//static void sJenkinsDebugInfo(const char *pre, const JENKINS_INFO_t *pkInfo)
+//{
+//    DEBUG("jenkins: %s %p chIx=%u active=%d result=%d (%s) state=%d (%s) job=%s server=%s time=%u",
+//        pre, pkInfo, pkInfo->chIx, pkInfo->active,
+//        pkInfo->result, sJenkinsResultToStr(pkInfo->result),
+//        pkInfo->state, sJenkinsStateToStr(pkInfo->state),
+//        pkInfo->job, pkInfo->server, pkInfo->time);
+//}
 
 typedef enum JENKINS_MSG_TYPE_e
 {
@@ -114,13 +122,14 @@ void jenkinsSetInfo(const JENKINS_INFO_t *pkInfo)
 {
     if (pkInfo != NULL)
     {
+        //sJenkinsDebugInfo("jenkinsSetInfo", pkInfo);
         JENKINS_MSG_t msg;
         memset(&msg, 0, sizeof(msg));
         msg.type = JENKINS_MSG_TYPE_INFO;
         memcpy(&msg.info, pkInfo, sizeof(msg.info));
         if (xQueueSend(sJenkinsMsgQueue, &msg, 10) != pdTRUE)
         {
-            ERROR("jenkins: queue full");
+            ERROR("jenkins: queue full (set)");
         }
     }
 }
@@ -132,7 +141,7 @@ void jenkinsClearAll(void)
     msg.type = JENKINS_MSG_TYPE_CLEAR_ALL;
     if (xQueueSend(sJenkinsMsgQueue, &msg, 10) != pdTRUE)
     {
-        ERROR("jenkins: queue full");
+        ERROR("jenkins: queue full (clear)");
     }
 }
 
@@ -143,7 +152,7 @@ void jenkinsUnknownAll(void)
     msg.type = JENKINS_MSG_TYPE_UNKNOWN_ALL;
     if (xQueueSend(sJenkinsMsgQueue, &msg, 10) != pdTRUE)
     {
-        ERROR("jenkins: queue full");
+        ERROR("jenkins: queue full (unkn)");
     }
 }
 
@@ -489,7 +498,7 @@ void jenkinsInit(void)
     INFO("jenkins: init");
 
     static StaticQueue_t sQueue;
-    static uint8_t sQueueBuf[sizeof(JENKINS_INFO_t) * JENKINS_MSG_QUEUE_LEN];
+    static uint8_t sQueueBuf[sizeof(JENKINS_MSG_t) * JENKINS_MSG_QUEUE_LEN];
     sJenkinsMsgQueue = xQueueCreateStatic(JENKINS_MSG_QUEUE_LEN, sizeof(JENKINS_MSG_t), sQueueBuf, &sQueue);
     sJenkinsClearAll();
 }

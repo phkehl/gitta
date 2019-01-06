@@ -45,7 +45,7 @@ static void sCmdFreeRegister(void)
         .command = "free", .hint = NULL, .func = &sCmdFreeFunc,
         .help = "get size of available heap, and lowest size ever available",
     };
-    ESP_ERROR_CHECK( esp_console_cmd_register(&cmd) );
+    ASSERT_ESP_OK( esp_console_cmd_register(&cmd) );
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ static void sCmdRestartRegister(void)
         .command = "restart", .hint = NULL, .func = &sCmdRestartFunc,
         .help = "restart system",
     };
-    ESP_ERROR_CHECK( esp_console_cmd_register(&cmd) );
+    ASSERT_ESP_OK( esp_console_cmd_register(&cmd) );
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ static void sCmdDebugRegister(void)
         .command = "debug", .hint = NULL, .func = &sCmdDebugFunc, .argtable = &sCmdDebugArgs,
         .help = "debugging level",
     };
-    ESP_ERROR_CHECK( esp_console_cmd_register(&cmd) );
+    ASSERT_ESP_OK( esp_console_cmd_register(&cmd) );
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ static void sCmdPrintenvRegister(void)
         .command = "printenv", .hint = NULL, .func = &sCmdPrintenvFunc,
         .help = "print all environment variables",
     };
-    ESP_ERROR_CHECK( esp_console_cmd_register(&cmd) );
+    ASSERT_ESP_OK( esp_console_cmd_register(&cmd) );
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -174,7 +174,7 @@ static void sCmdGetenvRegister(void)
         .command = "getenv", .hint = NULL, .func = &sCmdGetenvFunc, .argtable = &sCmdGetenvArgs,
         .help = "get environment variable",
     };
-    ESP_ERROR_CHECK( esp_console_cmd_register(&cmd) );
+    ASSERT_ESP_OK( esp_console_cmd_register(&cmd) );
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -219,7 +219,7 @@ static void sCmdSetenvRegister(void)
         .command = "setenv", .hint = NULL, .func = &sCmdSetenvFunc, .argtable = &sCmdSetenvArgs,
         .help = "set environment variable",
     };
-    ESP_ERROR_CHECK( esp_console_cmd_register(&cmd) );
+    ASSERT_ESP_OK( esp_console_cmd_register(&cmd) );
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -238,7 +238,7 @@ static void sCmdScanRegister(void)
         .command = "scan", .hint = NULL, .func = &sCmdScanFunc,
         .help = "scan for wifi access points",
     };
-    ESP_ERROR_CHECK( esp_console_cmd_register(&cmd) );
+    ASSERT_ESP_OK( esp_console_cmd_register(&cmd) );
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -273,7 +273,7 @@ static void sCmdMonitorRegister(void)
         .command = "monitor", .hint = NULL, .func = &sCmdMonitorFunc, .argtable = &sCmdMonitorArgs,
         .help = "system monitorg period",
     };
-    ESP_ERROR_CHECK( esp_console_cmd_register(&cmd) );
+    ASSERT_ESP_OK( esp_console_cmd_register(&cmd) );
 }
 
 /* *********************************************************************************************** */
@@ -418,7 +418,7 @@ void consoleStart(void)
         .hint_color = atoi(LOG_COLOR_CYAN)
 #endif
     };
-    ESP_ERROR_CHECK( esp_console_init(&consoleConfig) );
+    ASSERT_ESP_OK( esp_console_init(&consoleConfig) );
 
     // initialise linenoise prompt thingy
 #ifdef FANCY_PROMPT
@@ -437,8 +437,8 @@ void consoleStart(void)
     //        .stop_bits = UART_STOP_BITS_1,
     //        .use_ref_tick = true
     //};
-    //ESP_ERROR_CHECK( uart_param_config(CONFIG_CONSOLE_UART_NUM, &uart_config) );
-    ESP_ERROR_CHECK( uart_driver_install(CONFIG_CONSOLE_UART_NUM, MAX_CMD_LEN, 0, 0, NULL, 0) );
+    //ASSERT_ESP_OK( uart_param_config(CONFIG_CONSOLE_UART_NUM, &uart_config) );
+    ASSERT_ESP_OK( uart_driver_install(CONFIG_CONSOLE_UART_NUM, MAX_CMD_LEN, 0, 0, NULL, 0) );
     esp_vfs_dev_uart_use_driver(CONFIG_CONSOLE_UART_NUM);
 #endif
 

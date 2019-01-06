@@ -202,16 +202,16 @@ void envInit(void)
         esp_err_t err = nvs_flash_init();
         if ( (err == ESP_ERR_NVS_NO_FREE_PAGES) || (err == ESP_ERR_NVS_NEW_VERSION_FOUND))
         {
-            ESP_ERROR_CHECK( nvs_flash_erase() );
+            ASSERT_ESP_OK( nvs_flash_erase() );
             err = nvs_flash_init();
         }
-        ESP_ERROR_CHECK(err);
+        ASSERT_ESP_OK(err);
     }
 
     // open our own NVS namespace
     {
         esp_err_t err = nvs_open(CONFIG_FF_NAME, NVS_READWRITE, &sEnvNvsHandle);
-        ESP_ERROR_CHECK(err);
+        ASSERT_ESP_OK(err);
 
         nvs_stats_t nvsStats;
         nvs_get_stats(NULL, &nvsStats);
@@ -226,7 +226,7 @@ void envInit(void)
         if (!sEnvLoadStr(pkReg->key, pkReg->val, pkReg->size))
         {
             strncpy(pkReg->val, pkReg->def, pkReg->size);
-            ESP_ERROR_CHECK( sEnvStoreStr(pkReg->key, pkReg->val) ? ESP_OK : ESP_FAIL );
+            ASSERT_ESP_OK( sEnvStoreStr(pkReg->key, pkReg->val) ? ESP_OK : ESP_FAIL );
         }
     }
 

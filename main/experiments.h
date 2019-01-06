@@ -3,6 +3,8 @@
 
 #include "stdinc.h"
 
+void exDoNothing(void);
+
 void exToggleSpivPins(void);
 
 void exSendSpiv(void);

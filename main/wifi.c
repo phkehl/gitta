@@ -549,15 +549,15 @@ void wifiStart(void)
 
     // initialise wifi, start wifi task
     const wifi_init_config_t wifiCfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK( esp_wifi_init(&wifiCfg) );
-    ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
-    //ESP_ERROR_CHECK( esp_wifi_set_auto_connect(false) );
-    ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
-    //ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_NULL) );
-    ESP_ERROR_CHECK( esp_event_loop_init(sWifiEventHandler, NULL) );
-    ESP_ERROR_CHECK( esp_wifi_start() );
+    ASSERT_ESP_OK( esp_wifi_init(&wifiCfg) );
+    ASSERT_ESP_OK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
+    //ASSERT_ESP_OK( esp_wifi_set_auto_connect(false) );
+    ASSERT_ESP_OK( esp_wifi_set_mode(WIFI_MODE_STA) );
+    //ASSERT_ESP_OK( esp_wifi_set_mode(WIFI_MODE_NULL) );
+    ASSERT_ESP_OK( esp_event_loop_init(sWifiEventHandler, NULL) );
+    ASSERT_ESP_OK( esp_wifi_start() );
 
-    ESP_ERROR_CHECK( tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, name) );
+    ASSERT_ESP_OK( tcpip_adapter_set_hostname(TCPIP_ADAPTER_IF_STA, name) );
 
     monRegisterMonFunc(sWifiMonFunc);
     monRegisterMonFunc(backendMonStatus);
