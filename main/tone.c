@@ -279,7 +279,7 @@ void toneRtttlMelody(const char *rtttl)
 
 void toneInit(void)
 {
-    INFO("tone: init (%uMHz)", TIMER_BASE_CLK /* = APB_CLK_FREQ */ / 1000000);
+    INFO("tone: init (%uMHz, GPIO %d)", TIMER_BASE_CLK /* = APB_CLK_FREQ */ / 1000000, CONFIG_FF_TONE_GPIO);
 
     gpio_pad_select_gpio(TONE_GPIO);
     gpio_set_direction(  TONE_GPIO, GPIO_MODE_OUTPUT);

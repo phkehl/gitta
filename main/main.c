@@ -25,6 +25,38 @@
 #include "experiments.h"
 #include "version_gen.h"
 
+
+#if (CONFIG_FF_STATUS_LED_GPIO == CONFIG_FF_STATUS_EFFECT_GPIO)
+#  error CONFIG_FF_STATUS_LED_GPIO == CONFIG_FF_STATUS_EFFECT_GPIO!
+#endif
+#if (CONFIG_FF_STATUS_LED_GPIO == CONFIG_FF_TONE_GPIO)
+#  error CONFIG_FF_STATUS_LED_GPIO == CONFIG_FF_TONE_GPIO!
+#endif
+#if (CONFIG_FF_STATUS_LED_GPIO == CONFIG_FF_LEDS_MOSI_GPIO)
+#  error CONFIG_FF_STATUS_LED_GPIO == CONFIG_FF_LEDS_MOSI_GPIO!
+#endif
+#if (CONFIG_FF_STATUS_LED_GPIO == CONFIG_FF_LEDS_SCK_GPIO)
+#  error CONFIG_FF_STATUS_LED_GPIO == CONFIG_FF_LEDS_SCK_GPIO!
+#endif
+#if (CONFIG_FF_STATUS_EFFECT_GPIO == CONFIG_FF_TONE_GPIO)
+#  error CONFIG_FF_STATUS_EFFECT_GPIO == CONFIG_FF_TONE_GPIO!
+#endif
+#if (CONFIG_FF_STATUS_EFFECT_GPIO == CONFIG_FF_LEDS_MOSI_GPIO)
+#  error CONFIG_FF_STATUS_EFFECT_GPIO == CONFIG_FF_LEDS_MOSI_GPIO!
+#endif
+#if (CONFIG_FF_STATUS_EFFECT_GPIO == CONFIG_FF_LEDS_SCK_GPIO)
+#  error CONFIG_FF_STATUS_EFFECT_GPIO == CONFIG_FF_LEDS_SCK_GPIO!
+#endif
+#if (CONFIG_FF_TONE_GPIO == CONFIG_FF_LEDS_MOSI_GPIO)
+#  error CONFIG_FF_TONE_GPIO == CONFIG_FF_LEDS_MOSI_GPIO!
+#endif
+#if (CONFIG_FF_TONE_GPIO == CONFIG_FF_LEDS_SCK_GPIO)
+#  error CONFIG_FF_TONE_GPIO == CONFIG_FF_LEDS_SCK_GPIO!
+#endif
+#if (CONFIG_FF_LEDS_MOSI_GPIO == CONFIG_FF_LEDS_SCK_GPIO)
+#  error CONFIG_FF_LEDS_MOSI_GPIO == CONFIG_FF_LEDS_SCK_GPIO!
+#endif
+
 #pragma GCC diagnostic ignored "-Wmissing-prototypes"
 void app_main()
 {
@@ -54,7 +86,6 @@ void app_main()
     INFO("https://oinkzwurgl.org/projaeggd/tschenggins-laempli/");
     INFO("Parts copyright by others. See source code.");
     INFO("------------------------------------------------------------------------------------------");
-
     // print some system information
     esp_chip_info_t chipInfo;
     esp_chip_info(&chipInfo);

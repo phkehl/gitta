@@ -1,7 +1,7 @@
 menu "GITTA Tschenggins Laempli Configuration"
 
 config FF_NAME
-    string "name for prefixing logging outpit, nvs section, etc."
+    string "name for prefixing logging output, nvs section, etc."
     default "gitta"
     help
         A short string that is used to prefix any logging output, naming the NVS section, and other things.
@@ -64,14 +64,14 @@ config FF_ENV_BACKEND_DEFAULT
 
 config FF_STATUS_LED_GPIO
     int "GPIO for the status LED"
-    default 2
+    default 26
     help
         On the Arduino MKR1010 there are LEDs on the following NINA-W102 GPIOs: 26 = RED, 25 = GREEN, 27 = BLUE.
         On the Wemos Mini32 (and many others) the LED is on GPIO 2.
 
 config FF_STATUS_EFFECT_GPIO
     int "GPIO for triggering effect (Chewbacca)"
-    default 27
+    default 25
 
 config FF_STATUS_EFFECT_DURATION
     int "effect duration [100ms]"
@@ -79,7 +79,15 @@ config FF_STATUS_EFFECT_DURATION
 
 config FF_TONE_GPIO
     int "GPIO for the speaker"
-    default 25
+    default 27
+
+config FF_LEDS_MOSI_GPIO
+    int "GPIO for MOSI for the LEDs (DI)"
+    default 19
+
+config FF_LEDS_SCK_GPIO
+    int "GPIO for SCK for the LEDs (CI)"
+    default 18
 
 config FF_JENKINS_MAX_CH
     int "maximum number of channels (jobs) we can track"

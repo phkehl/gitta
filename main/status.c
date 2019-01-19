@@ -161,7 +161,7 @@ void statusEffect(void)
 
 void statusInit(void)
 {
-    INFO("status: init");
+    INFO("status: init (GPIO: LED %d, fx %d)", CONFIG_FF_STATUS_LED_GPIO, CONFIG_FF_STATUS_EFFECT_GPIO);
 
     gpio_pad_select_gpio(CONFIG_FF_STATUS_LED_GPIO);
     gpio_set_direction(  CONFIG_FF_STATUS_LED_GPIO, GPIO_MODE_OUTPUT);

@@ -450,10 +450,11 @@ static void sLedsTask(void *pArg)
 
 void ledsInit(void)
 {
-    INFO("leds: init (%ux3=%u / %u, %u / %u*4=%u, %ukHz)",
+    INFO("leds: init (%ux3=%u / %u, %u / %u*4=%u, %ukHz, MOSI %d, SCK %d)",
         CONFIG_FF_LEDS_NUM, sizeof(sLedsData),
         LEDS_WS2801_BUFSIZE, LEDS_SK9822_BUFSIZE,
-        NUMOF(sLedsSpiBuf), sizeof(sLedsSpiBuf), CONFIG_FF_LEDS_SPI_SPEED / 1000);
+        NUMOF(sLedsSpiBuf), sizeof(sLedsSpiBuf), CONFIG_FF_LEDS_SPI_SPEED / 1000,
+        CONFIG_FF_LEDS_MOSI_GPIO, CONFIG_FF_LEDS_SCK_GPIO);
 
     memset(&sLedsStates, 0, sizeof(sLedsStates));
 
@@ -463,8 +464,8 @@ void ledsInit(void)
         .miso_io_num   = -1,
         //.mosi_io_num   = 19, // NINA 21 (on MKR1010: --> SAMD21 PA14 (28))
         //.sclk_io_num   = 18, // NINA 29 (on MKR1010: --> SAMD21 PA15 (29))
-        .mosi_io_num   = 23, // SPI_MOSI
-        .sclk_io_num   = 18, // SPI_SCK
+        .mosi_io_num   = CONFIG_FF_LEDS_MOSI_GPIO,
+        .sclk_io_num   = CONFIG_FF_LEDS_SCK_GPIO,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
         .max_transfer_sz = sizeof(sLedsSpiBuf),
