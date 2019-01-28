@@ -47,3 +47,14 @@ gdb:
 	xtensa-esp32-elf-gdb -x $(PROJECT_PATH)/tools/gdbinit $(BUILD_DIR_BASE)/$(PROJECT_NAME).elf
 
 ####################################################################################################
+
+# FIXME: add to default target, get files and offset from variables
+.PHONY: combine
+combine:
+	perl tools/combinebins.pl $(BUILD_DIR_BASE)/combine.bin \
+		 0x1000 $(BUILD_DIR_BASE)/bootloader/bootloader.bin \
+		 0x8000 $(BUILD_DIR_BASE)/partitions_singleapp.bin \
+		0x10000 $(BUILD_DIR_BASE)/$(PROJECT_NAME).bin
+	ls -l $(BUILD_DIR_BASE)/combine.bin
+
+
