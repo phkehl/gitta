@@ -44,7 +44,7 @@ config FF_BACKEND_URL_MAXLEN
 
 config FF_ENV_MONITOR_DEFAULT
     string "system monitor period in [s]"
-    default "5.0"
+    default "60.0"
 
 config FF_ENV_DEBUG_DEFAULT
     string "debugging output on or off"

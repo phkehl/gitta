@@ -19,6 +19,11 @@ This is like the original Tschenggins Lämpli, just for the ESP32 (e.g. a u-blox
 
 ## Notes
 
+- To preset wifi and backend settings edit sdconfig.defaults and add `CONFIG_FF_ENV_SSID_DEFAULT="..."`,
+ `CONFIG_FF_ENV_PASS_DEFAULT="..."`, and `CONFIG_FF_ENV_BACKEND_DEFAULT="..."`
+
+- To use another defaults file, use `make SDKCONFIG_DEFAULTS=mydefaultsfile`.
+
 - ESP32 esp-idf: https://docs.espressif.com/projects/esp-idf/en/latest/
 - http://esp32.net/#Development
 - make -j8 && make flash && make monitor

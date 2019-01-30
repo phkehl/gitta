@@ -48,13 +48,22 @@ gdb:
 
 ####################################################################################################
 
-# FIXME: add to default target, get files and offset from variables
-.PHONY: combine
-combine:
-	perl tools/combinebins.pl $(BUILD_DIR_BASE)/combine.bin \
-		 0x1000 $(BUILD_DIR_BASE)/bootloader/bootloader.bin \
-		 0x8000 $(BUILD_DIR_BASE)/partitions_singleapp.bin \
-		0x10000 $(BUILD_DIR_BASE)/$(PROJECT_NAME).bin
-	ls -l $(BUILD_DIR_BASE)/combine.bin
+FF_COMBINED_2MB := build/combined-2MB.bin
+FF_COMBINED_4MB := build/combined-4MB.bin
+all_binaries: $(FF_COMBINED_2MB) $(FF_COMBINED_4MB)
+
+$(FF_COMBINED_2MB): partition_table_get_info $(APP_BIN) $(BOOTLOADER_BIN) $(PARTITION_TABLE_BIN)
+	$(summary) "Creating $@"
+	perl tools/combinebins.pl $@ 2 \
+		$(APP_OFFSET) $(APP_BIN) \
+		$(BOOTLOADER_OFFSET) $(BOOTLOADER_BIN) \
+		$(PARTITION_TABLE_OFFSET) $(PARTITION_TABLE_BIN)
+
+$(FF_COMBINED_4MB): partition_table_get_info $(APP_BIN) $(BOOTLOADER_BIN) $(PARTITION_TABLE_BIN)
+	$(summary) "Creating $@"
+	perl tools/combinebins.pl $@ 4 \
+		$(APP_OFFSET) $(APP_BIN) \
+		$(BOOTLOADER_OFFSET) $(BOOTLOADER_BIN) \
+		$(PARTITION_TABLE_OFFSET) $(PARTITION_TABLE_BIN)
 
 

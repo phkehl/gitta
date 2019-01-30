@@ -3,7 +3,8 @@ use strict;
 use warnings;
 use Path::Tiny;
 my $targetBin = shift(@ARGV);
-my $data = pack('C*', ((0x00) x (1024 * 1024 * 2)));
+my $targetSize = shift(@ARGV);
+my $data = pack('C*', ((0x00) x (1024 * 1024 * $targetSize)));
 my %things = @ARGV;
 foreach my $addr (sort { hex($a) <=> hex($b) } keys %things)
 {
