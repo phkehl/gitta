@@ -2,7 +2,7 @@
     \file
     \brief GITTA Tschenggins Lämpli: HSV to RGB conversion (see \ref FF_HSV2RGB)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 
     \defgroup FF_HSV2RGB HSV2RGB

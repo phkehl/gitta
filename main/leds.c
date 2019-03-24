@@ -1,7 +1,8 @@
 /*!
+    \file
     \brief GITTA Tschenggins Lämpli: LEDS WS2801 and SK9822 LED driver (see \ref FF_LEDS)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 
     - Credits: see source code
@@ -15,7 +16,7 @@
 #include "stuff.h"
 #include "debug.h"
 #include "mon.h"
-#include "config.h"
+#include "cfg.h"
 #include "hsv2rgb.h"
 #include "leds.h"
 
@@ -42,15 +43,15 @@ static void sLedsSetRGB(const uint16_t ix, const uint8_t R, const uint8_t G, con
 {
     if (ix < CONFIG_FF_LEDS_NUM)
     {
-        switch (configGetOrder())
+        switch (cfgGetOrder())
         {
-            case CONFIG_ORDER_RGB: sLedsData[ix][0] = R; sLedsData[ix][1] = G; sLedsData[ix][2] = B; break;
-            case CONFIG_ORDER_RBG: sLedsData[ix][0] = R; sLedsData[ix][1] = B; sLedsData[ix][2] = G; break;
-            case CONFIG_ORDER_GRB: sLedsData[ix][0] = G; sLedsData[ix][1] = R; sLedsData[ix][2] = B; break;
-            case CONFIG_ORDER_GBR: sLedsData[ix][0] = G; sLedsData[ix][1] = B; sLedsData[ix][2] = R; break;
-            case CONFIG_ORDER_BRG: sLedsData[ix][0] = B; sLedsData[ix][1] = R; sLedsData[ix][2] = G; break;
-            case CONFIG_ORDER_BGR: sLedsData[ix][0] = B; sLedsData[ix][1] = G; sLedsData[ix][2] = R; break;
-            case CONFIG_ORDER_UNKNOWN:
+            case CFG_ORDER_RGB: sLedsData[ix][0] = R; sLedsData[ix][1] = G; sLedsData[ix][2] = B; break;
+            case CFG_ORDER_RBG: sLedsData[ix][0] = R; sLedsData[ix][1] = B; sLedsData[ix][2] = G; break;
+            case CFG_ORDER_GRB: sLedsData[ix][0] = G; sLedsData[ix][1] = R; sLedsData[ix][2] = B; break;
+            case CFG_ORDER_GBR: sLedsData[ix][0] = G; sLedsData[ix][1] = B; sLedsData[ix][2] = R; break;
+            case CFG_ORDER_BRG: sLedsData[ix][0] = B; sLedsData[ix][1] = R; sLedsData[ix][2] = G; break;
+            case CFG_ORDER_BGR: sLedsData[ix][0] = B; sLedsData[ix][1] = G; sLedsData[ix][2] = R; break;
+            case CFG_ORDER_UNKNOWN:
             {
                 const uint8_t RGB = ((uint16_t)R + (uint16_t)G + (uint16_t)B) / 3;
                 sLedsData[ix][0] = RGB; sLedsData[ix][1] = RGB; sLedsData[ix][2] = RGB;
@@ -75,13 +76,13 @@ static int sLedsRenderWS2801(uint8_t *outBuf, const int bufSize)
     memset(outBuf, 0, bufSize);
     const int outSize = MIN(bufSize, (int)sizeof(sLedsData));
     uint32_t brightness = 0;
-    switch (configGetBright())
+    switch (cfgGetBright())
     {
-        case CONFIG_BRIGHT_FULL:   brightness =   0; break;
-        case CONFIG_BRIGHT_HIGH:   brightness = 200; break;
-        case CONFIG_BRIGHT_MEDIUM: brightness = 100; break;
-        case CONFIG_BRIGHT_UNKNOWN:
-        case CONFIG_BRIGHT_LOW:    brightness =  50; break;
+        case CFG_BRIGHT_FULL:   brightness =   0; break;
+        case CFG_BRIGHT_HIGH:   brightness = 200; break;
+        case CFG_BRIGHT_MEDIUM: brightness = 100; break;
+        case CFG_BRIGHT_UNKNOWN:
+        case CFG_BRIGHT_LOW:    brightness =  50; break;
     }
     if (brightness == 0)
     {
@@ -107,13 +108,13 @@ static int sLedsRenderSK9822(uint8_t *outBuf, const int bufSize)
     memset(outBuf, 0, bufSize);
 
     uint8_t brightness = 0;
-    switch (configGetBright())
+    switch (cfgGetBright())
     {
-        case CONFIG_BRIGHT_FULL:   brightness = 31; break;
-        case CONFIG_BRIGHT_HIGH:   brightness = 20; break;
-        case CONFIG_BRIGHT_MEDIUM: brightness = 10; break;
-        case CONFIG_BRIGHT_UNKNOWN:
-        case CONFIG_BRIGHT_LOW:    brightness =  5; break;
+        case CFG_BRIGHT_FULL:   brightness = 31; break;
+        case CFG_BRIGHT_HIGH:   brightness = 20; break;
+        case CFG_BRIGHT_MEDIUM: brightness = 10; break;
+        case CFG_BRIGHT_UNKNOWN:
+        case CFG_BRIGHT_LOW:    brightness =  5; break;
     }
 
     // Tim (https://cpldcpu.wordpress.com/2016/12/13/sk9822-a-clone-of-the-apa102/) says:
@@ -173,19 +174,19 @@ DRAM_ATTR WORD_ALIGNED_ATTR static uint8_t sLedsSpiBuf[ MAX(LEDS_WS2801_BUFSIZE,
 static spi_device_handle_t spLedsSpiDevHandle;
 
 // update LEDs (send data to SPI)
-static void sLedsFlush(const CONFIG_DRIVER_t driver)
+static void sLedsFlush(const CFG_DRIVER_t driver)
 {
      // copy framebuffer
     int nBytesToSend = 0;
     switch (driver)
     {
-        case CONFIG_DRIVER_UNKNOWN:
-        case CONFIG_DRIVER_NONE:
+        case CFG_DRIVER_UNKNOWN:
+        case CFG_DRIVER_NONE:
             break;
-        case CONFIG_DRIVER_WS2801:
+        case CFG_DRIVER_WS2801:
             nBytesToSend = sLedsRenderWS2801((uint8_t *)sLedsSpiBuf, sizeof(sLedsSpiBuf));
             break;
-        case CONFIG_DRIVER_SK9822:
+        case CFG_DRIVER_SK9822:
             nBytesToSend = sLedsRenderSK9822((uint8_t *)sLedsSpiBuf, sizeof(sLedsSpiBuf));
             break;
     }
@@ -373,17 +374,17 @@ static void sLedsTask(void *pArg)
 {
     UNUSED(pArg);
 
-    static CONFIG_DRIVER_t sConfigDriverLast = CONFIG_DRIVER_UNKNOWN;
-    static CONFIG_ORDER_t  sConfigOrderLast  = CONFIG_ORDER_UNKNOWN;
-    static CONFIG_BRIGHT_t sConfigBrightLast = CONFIG_BRIGHT_UNKNOWN;
+    static CFG_DRIVER_t sConfigDriverLast = CFG_DRIVER_UNKNOWN;
+    static CFG_ORDER_t  sConfigOrderLast  = CFG_ORDER_UNKNOWN;
+    static CFG_BRIGHT_t sConfigBrightLast = CFG_BRIGHT_UNKNOWN;
 
     while (true)
     {
-        const CONFIG_DRIVER_t configDriver = configGetDriver();
-        const CONFIG_ORDER_t  configOrder  = configGetOrder();
-        const CONFIG_BRIGHT_t configBright = configGetBright();
+        const CFG_DRIVER_t configDriver = cfgGetDriver();
+        const CFG_ORDER_t  configOrder  = cfgGetOrder();
+        const CFG_BRIGHT_t configBright = cfgGetBright();
 
-        // handle config changes
+        // handle cfg.changes
         bool doDemo = false;
         if (sConfigDriverLast != configDriver)
         {
@@ -407,7 +408,7 @@ static void sLedsTask(void *pArg)
         }
 
         // cannot do much if we don't know the driver
-        if (configGetDriver() == CONFIG_DRIVER_UNKNOWN)
+        if (cfgGetDriver() == CFG_DRIVER_UNKNOWN)
         {
             osSleep(100);
             continue;
@@ -483,9 +484,9 @@ void ledsInit(void)
 
     // send "clear all LEDs" for all known drivers, this should clear all LEDs in all(most all) setups
     sLedsClear();
-    sLedsFlush(CONFIG_DRIVER_SK9822);
+    sLedsFlush(CFG_DRIVER_SK9822);
     osSleep(100);
-    sLedsFlush(CONFIG_DRIVER_WS2801);
+    sLedsFlush(CFG_DRIVER_WS2801);
     osSleep(100);
 }
 

@@ -2,7 +2,7 @@
     \file
     \brief GITTA Tschenggins Lämpli: JSON stuff (see \ref FF_JSON)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 */
 

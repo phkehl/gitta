@@ -2,7 +2,7 @@
     \file
     \brief GITTA Tschenggins Lämpli: backend data handling (see \ref FF_BACKEND)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 
     \defgroup FF_BACKEND BACKEND
@@ -20,6 +20,7 @@ void backendInit(void);
 
 typedef enum BACKEND_STATUS_e
 {
+    BACKEND_STATUS_CONNECTED,
     BACKEND_STATUS_OKAY,
     BACKEND_STATUS_RECONNECT,
     BACKEND_STATUS_FAIL,

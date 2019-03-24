@@ -1,8 +1,8 @@
-/*
+/*!
     \file
     \brief GITTA Tschenggins Lämpli: wifi and network things (see \ref FF_WIFI)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 
     \defgroup FF_WIFI WIFI

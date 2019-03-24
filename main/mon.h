@@ -1,8 +1,8 @@
-/*
+/*!
     \file
     \brief GITTA Tschenggins Lämpli: system monitor (see \ref FF_MON)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 
     \defgroup FF_MON MON

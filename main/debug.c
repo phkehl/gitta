@@ -1,8 +1,8 @@
-/*
+/*!
     \file
     \brief GITTA Tschenggins Lämpli: debugging (see \ref FF_DEBUG)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 */
 
@@ -28,7 +28,7 @@ bool debugSetLevel(const char *level)
     const char *tags[] =
     {
         "HTTP_CLIENT", "nvs", "memory_layout", "heap_init", "event", "tcpip_adapter", "esp-tls",
-        "wifi", "intr_alloc", "phy_init", "RTC_MODULE", "spi_master",
+        "wifi", "intr_alloc", "phy_init", "RTC_MODULE", "spi_master", "efuse", "spi_master",
     };
     if (level != NULL)
     {

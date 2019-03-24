@@ -1,8 +1,8 @@
-/*
+/*!
     \file
     \brief GITTA Tschenggins Lämpli: wifi and network things (see \ref FF_WIFI)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 */
 
@@ -41,7 +41,6 @@ typedef struct WIFI_DATA_s
     char client[10];
     char params[sizeof(BACKEND_QUERY) + 200];
     esp_http_client_handle_t pHttpClient;
-    bool helloSeen;
     BACKEND_STATUS_t backendStatus;
 
 } WIFI_DATA_t;
@@ -68,49 +67,24 @@ static esp_err_t sWifiHttpEventHandler(esp_http_client_event_t *pEvent)
             // we receive (expect) text, nul terminate it
             char *pData = (char *)pEvent->data;
             int dataLen = pEvent->data_len;
-            pData[dataLen] = '\0';
-            //DEBUG("wifi: data(%d)=[%s]", dataLen, pData);
-
-            // the first chunk of data must contain the "hello"
-            WIFI_DATA_t *pWifiData = (WIFI_DATA_t *)pEvent->user_data;
-            if (!pWifiData->helloSeen)
-            {
-                char *pHello = strstr(pData, "hello ");
-                char *pEol = strstr(pData, "\r\n");
-                if ( (pHello == NULL) || (pEol == NULL) )
-                {
-                    WARNING("wifi: no 'hello' in response");
-                    pData = NULL;
-                    // FIXME: we should be able to "return ESP_FAIL" or something, but
-                    // esp_http_client doesn't care about our return value, so do this instead:
-                    esp_http_client_close(pEvent->client);
-                }
-                else
-                {
-                    *pEol = '\0';
-                    DEBUG("wifi: have hello: [%s]", pHello);
-                    statusNoise(STATUS_NOISE_ONLINE);
-                    statusLed(STATUS_LED_HEARTBEAT);
-                    pWifiData->helloSeen = true;
-
-                    // remaining data
-                    pData = pEol + 2;
-                    dataLen = strlen(pData);
-                    if (dataLen <= 0)
-                    {
-                        pData = NULL;
-                        dataLen = 0;
-                    }
-                }
-            }
 
             // process data
             if (pData != NULL)
             {
+                pData[dataLen] = '\0';
+                //DEBUG("wifi: data(%d)=[%s]", dataLen, pData);
+
                 const BACKEND_STATUS_t status = backendHandle(pData, dataLen);
+
+                WIFI_DATA_t *pWifiData = (WIFI_DATA_t *)pEvent->user_data;
                 pWifiData->backendStatus = status;
+
                 switch (status)
                 {
+                    case BACKEND_STATUS_CONNECTED:
+                        statusNoise(STATUS_NOISE_ONLINE);
+                        statusLed(STATUS_LED_HEARTBEAT);
+                        break;
                     case BACKEND_STATUS_OKAY:
                         break;
                     case BACKEND_STATUS_FAIL:
@@ -134,14 +108,72 @@ static esp_err_t sWifiHttpEventHandler(esp_http_client_event_t *pEvent)
 
 /* *********************************************************************************************** */
 
-// the state of the wifi (network) connection
+//! the state of the wifi (network) connection
+/*!
+    wifi task state machine
+\verbatim
+                           start
+ .--------------.            |         .----------.
+ |              |            |         |          |
+ |             \|/          \|/       \|/         |
+ |         +----------------------------------+   |
+ |         |          *** WAITCFG ***         |   |
+ |         | have ssid and pass?          no:-|---'
+ |         | yes: configure station           |
+ |         +----------------------------------+
+ |                           |
+ |                           |
+ |                          \|/
+ |         +--------------------------------------+
+ |         |          *** OFFLINE *****           |
+ |         | connect station to AP                |
+ |         | - wait for connection (5')  timeout:-|-------------.
+ |         | - wait for IP (5')          timeout:-|-----------. |
+ |         +--------------------------------------+           | |
+ |                           |                                | |
+ |  .------------.           |       .-------------------.    | |
+ |  |            |           |       |     .--------.    |    | |
+ |  |           \|/         \|/     \|/   \|/       |    |    | |
+ |  |      +--------------------------------------+ |    |    | |
+ |  |      |          *** ONLINE ***              | |    |    | |
+ |  |      | have backend config?             no:-|-'    |    | |
+ |  |      | yes: setup http agent (client)       |      |    | |
+ |  |      +--------------------------------------+      |    | |
+ |  |                        |                           |    | |
+ |  |                        |                           |    | |
+ |  |                       \|/                          |    | |
+ |  |   +--------------------------------------------+   |    | |
+ |  |   |             *** BACKEND ***                |   |    | |
+ |  |   | connect to backend, dispatch received data |   |    | |
+ |  |   | (status, heartbeat, cmds, ...) to backend, |   |    | |
+ |  |   | timeout if no data receieved regularly     |   |    | |
+ |  |   | on connection terminated                   |   |    | |
+ |  |   | - reconnect requested                     -|---'    | |
+ |  |   | - failure (no or not "200 OK" response, no |        | |
+ |  |   |   "hello", connection lost)               -|------. | |
+ |  |   +--------------------------------------------+      | | |
+ |  |                                                       | | |
+ |  |                               .-----------------------' | |
+ |  |                               |     .-------------------' |
+ |  |                               |     |     .---------------'
+ |  |                               |     |     |
+ |  |                              \|/   \|/   \|/
+ |  |   +--------------------------------------------+
+ |  |   |              *** FAIL ***                  |
+ |  |   | wait a bit if the last fail was recently   |
+ |  |   | too many fails recently?                  -|---> reset system (TODO)
+ |  '---|-station still online?                      |      (reboot)
+ '------|-station connection lost?                   |
+        +--------------------------------------------+
+\endverbatim
+*/
 typedef enum WIFI_STATE_e
 {
-    WIFI_STATE_WAITCFG = 0, // waiting for configuration
-    WIFI_STATE_OFFLINE,     // offline --> wait for station connect
-    WIFI_STATE_ONLINE,      // station online --> connect to backend
-    WIFI_STATE_BACKEND,   // backend connected
-    WIFI_STATE_FAIL,        // failure (e.g. connection lost) --> initialise
+    WIFI_STATE_WAITCFG = 0, //!< waiting for configuration
+    WIFI_STATE_OFFLINE,     //!< offline --> wait for station connect
+    WIFI_STATE_ONLINE,      //!< station online --> connect to backend
+    WIFI_STATE_BACKEND,     //!< backend connected
+    WIFI_STATE_FAIL,        //!< failure (e.g. connection lost) --> initialise
 } WIFI_STATE_t;
 
 static const char *sWifiStateStr(const WIFI_STATE_t state)
@@ -326,7 +358,7 @@ static void sWifiTask(void *pArg)
 
                 // probably a network interruption or the remote server disconnecting us
                 if ( ((err == ESP_OK) && (status == 200 /* 200 OK */)) ||
-                    (sWifiData.backendStatus = BACKEND_STATUS_RECONNECT) )
+                    (sWifiData.backendStatus == BACKEND_STATUS_RECONNECT) )
                 {
                     sWifiState = sWifiStationOnline ? WIFI_STATE_ONLINE : WIFI_STATE_FAIL;
                 }
@@ -361,6 +393,8 @@ static void sWifiTask(void *pArg)
                     }
                     waitTime--;
                 }
+
+                // TODO: reset system if there were too many fails within some time
 
                 // try reconnecting to backend if still online, start over otherwise
                 if (sWifiStationOnline)

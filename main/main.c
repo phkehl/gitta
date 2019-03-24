@@ -1,13 +1,11 @@
-/*
+/*!
     \file
     \brief GITTA Tschenggins Lämpli: main (see \ref FF_MAIN)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 
-    \defgroup GITTA GITTA
-    @{
-    @}
+
 */
 
 #include "stdinc.h"
@@ -20,7 +18,7 @@
 #include "status.h"
 #include "tone.h"
 #include "leds.h"
-#include "config.h"
+#include "cfg.h"
 #include "jenkins.h"
 #include "experiments.h"
 #include "version_gen.h"
@@ -67,7 +65,7 @@ void app_main()
     statusInit();
     toneInit();
     ledsInit();
-    configInit();
+    cfgInit();
     jenkinsInit();
 
     debugSetLevel( envGet("debug") );
@@ -82,7 +80,7 @@ void app_main()
     getSystemName(name, sizeof(name));
     INFO("------------------------------------------------------------------------------------------");
     INFO("GITTA Tschenggins Lämpli :-) - "FF_VERSION" - %s", name);
-    INFO("Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>");
+    INFO("Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org)");
     INFO("https://oinkzwurgl.org/projaeggd/tschenggins-laempli/");
     INFO("Parts copyright by others. See source code.");
     INFO("------------------------------------------------------------------------------------------");

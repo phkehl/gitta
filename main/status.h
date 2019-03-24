@@ -2,7 +2,7 @@
     \file
     \brief GITTA Tschenggins Lämpli: system status (see \ref FF_STATUS)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 
     \defgroup FF_STATUS STATUS

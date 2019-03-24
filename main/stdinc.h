@@ -1,8 +1,8 @@
-/*
+/*!
     \file
     \brief GITTA Tschenggins Lämpli: standard includes (see \ref FF_STDINC)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 
     \defgroup FF_STDINC STDINC

@@ -1,7 +1,8 @@
 /*!
+    \file
     \brief GITTA Tschenggins Lämpli: system status (see \ref FF_STATUS)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 */
 
@@ -10,7 +11,7 @@
 #include "stuff.h"
 #include "debug.h"
 #include "tone.h"
-#include "config.h"
+#include "cfg.h"
 #include "status.h"
 
 static uint8_t sStatusLedPeriod;
@@ -76,7 +77,7 @@ void statusNoise(const STATUS_NOISE_t noise)
 {
     DEBUG("status: noise %d", noise);
 
-    if (toneIsPlaying() || (configGetNoise() == CONFIG_NOISE_NONE) )
+    if (toneIsPlaying() || (cfgGetNoise() == CFG_NOISE_NONE) )
     {
         return;
     }
@@ -144,7 +145,7 @@ void statusMelody(const char *name)
 {
     DEBUG("status: melody %s", name);
 
-    if (configGetNoise() < CONFIG_NOISE_MORE)
+    if (cfgGetNoise() < CFG_NOISE_MORE)
     {
         return;
     }

@@ -2,7 +2,7 @@
     \file
     \brief GITTA Tschenggins Lämpli: backend data handling (see \ref FF_BACKEND)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 */
 
@@ -14,7 +14,7 @@
 #include "jenkins.h"
 #include "status.h"
 #include "tone.h"
-#include "config.h"
+#include "cfg.h"
 #include "json.h"
 #include "backend.h"
 
@@ -62,7 +62,6 @@ static void sBackendHandleSetTime(const char *timestamp)
     const uint32_t ts = (uint32_t)atoi(timestamp);
     if (ts != 0)
     {
-        sLastHeartbeat = osTime();
         osSetPosixTime(ts);
     }
 }
@@ -74,14 +73,36 @@ BACKEND_STATUS_t backendHandle(char *resp, const int len)
     BACKEND_STATUS_t res = BACKEND_STATUS_OKAY;
     sBytesReceived += len;
 
+    const uint32_t now = osTime();
+
     //DEBUG("backendHandle() [%d] %s", len, resp);
 
+    // look for known server data
+    char *pHello     = strstr(resp, "\r\n""hello ");
     char *pConfig    = strstr(resp, "\r\n""config ");
     char *pStatus    = strstr(resp, "\r\n""status ");
     char *pHeartbeat = strstr(resp, "\r\n""heartbeat ");
     char *pError     = strstr(resp, "\r\n""error ");
     char *pReconnect = strstr(resp, "\r\n""reconnect ");
     char *pCommand   = strstr(resp, "\r\n""command ");
+
+    // \r\nhello 87e984 256 clientname\r\n
+    if (pHello != NULL)
+    {
+        pHello += 2;
+        char *endOfLine = strstr(pHello, "\r\n");
+        if (endOfLine != NULL)
+        {
+            *endOfLine = '\0';
+            const char *pMsg = &pHello[6];
+            DEBUG("backend: hello: %s", pMsg);
+            if (sLastHello == 0)
+            {
+                sLastHello = now;
+                res = BACKEND_STATUS_CONNECTED;
+            }
+        }
+    }
 
     // "\r\nerror 1491146601 WTF?\r\n"
     if (pError != NULL)
@@ -120,6 +141,7 @@ BACKEND_STATUS_t backendHandle(char *resp, const int len)
         {
             *endOfLine = '\0';
             sBackendHandleSetTime(&pHeartbeat[10]);
+            sLastHeartbeat = now;
             const char *pCnt = &pHeartbeat[10 + 10 + 1];
             DEBUG("backend: heartbeat %s", pCnt);
         }
@@ -137,11 +159,7 @@ BACKEND_STATUS_t backendHandle(char *resp, const int len)
             char *pJson = &pConfig[7 + 10 + 1];
             const int jsonLen = strlen(pJson);
             DEBUG("backend: config");
-            if (configParseJson(pJson, jsonLen))
-            {
-                statusNoise(STATUS_NOISE_OTHER);
-            }
-            else
+            if (!cfgParseJson(pJson, jsonLen))
             {
                 statusNoise(STATUS_NOISE_ERROR);
             }
@@ -214,14 +232,16 @@ BACKEND_STATUS_t backendHandle(char *resp, const int len)
         }
     }
 
+    // we must always receive the "hello" in the first chunk of data
+    if (sLastHello == 0)
+    {
+        ERROR("backend: no hello");
+        res = BACKEND_STATUS_FAIL;
+    }
+
     // check heartbeat
     if (res == BACKEND_STATUS_OKAY)
     {
-        const uint32_t now = osTime();
-        if (sLastHello == 0)
-        {
-            sLastHello = now;
-        }
         if ( (now - sLastHeartbeat) > BACKEND_HEARTBEAT_TIMEOUT )
         {
             ERROR("backend: lost heartbeat");

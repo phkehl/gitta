@@ -2,7 +2,7 @@
     \file
     \brief GITTA Tschenggins Lämpli: Jenkins status (see \ref FF_JENKINS)
 
-    - Copyright (c) 2018 Philippe Kehl & flipflip industries <flipflip at oinkzwurgl dot org>,
+    - Copyright (c) 2018 Philippe Kehl & flipflip industries (flipflip at oinkzwurgl dot org),
       https://oinkzwurgl.org/projaeggd/tschenggins-laempli
 */
 
@@ -11,7 +11,7 @@
 #include "debug.h"
 #include "stuff.h"
 #include "leds.h"
-#include "config.h"
+#include "cfg.h"
 #include "tone.h"
 #include "mon.h"
 #include "status.h"
@@ -383,7 +383,7 @@ static void sJenkinsUpdate(void)
         sJenkinsStateToStr(activeState), sJenkinsStateToStr(sJenkinsActiveState));
 
     // play sound if we changed from failure/warning to success or from success/warning to failure
-    // TODO: play more sounds if CONFIG_NOISE_MORE
+    // TODO: play more sounds if CFG_NOISE_MORE
     // FIXME: also check for state == idle?
     if (sJenkinsWorstResult != JENKINS_RESULT_UNKNOWN)
     {
@@ -393,7 +393,7 @@ static void sJenkinsUpdate(void)
             {
                 case JENKINS_RESULT_FAILURE:
                     INFO("jenkins: failure!");
-                    if (configGetNoise() >= CONFIG_NOISE_MORE)
+                    if (cfgGetNoise() >= CFG_NOISE_MORE)
                     {
                         toneStop();
                         statusEffect();
@@ -402,7 +402,7 @@ static void sJenkinsUpdate(void)
                     break;
                 case JENKINS_RESULT_SUCCESS:
                     INFO("jenkins: success!");
-                    if (configGetNoise() >= CONFIG_NOISE_MORE)
+                    if (cfgGetNoise() >= CFG_NOISE_MORE)
                     {
                         toneStop();
                         toneBuiltinMelody("IndianaShort");
