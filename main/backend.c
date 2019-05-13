@@ -66,6 +66,29 @@ static void sBackendHandleSetTime(const char *timestamp)
     }
 }
 
+// public domain, from https://stackoverflow.com/questions/1634359/is-there-a-reverse-function-for-strstr, modified
+static char *strrstr(char *haystack, const char *needle)
+{
+    if (*needle == '\0')
+    {
+        return haystack;
+    }
+
+    char *result = NULL;
+    while (true)
+    {
+        char *p = strstr(haystack, needle);
+        if (p == NULL)
+        {
+            break;
+        }
+        result = p;
+        haystack = p + 1;
+    }
+
+    return result;
+}
+
 
 // process response from backend
 BACKEND_STATUS_t backendHandle(char *resp, const int len)
@@ -77,14 +100,31 @@ BACKEND_STATUS_t backendHandle(char *resp, const int len)
 
     //DEBUG("backendHandle() [%d] %s", len, resp);
 
+    // backend buffer (we may or may not get full lines in resp from the 
+    static char sBackendBuf[4096];
+    const int backendBufLen = strlen(sBackendBuf);
+    if ((int)sizeof(sBackendBuf) > (backendBufLen + len))
+    {
+        strncat(sBackendBuf, resp, (int)sizeof(sBackendBuf) - 2);
+    }
+    else
+    {
+        WARNING("backend: rx buf");
+        sBackendBuf[0] = '\0';
+        return BACKEND_STATUS_RXBUF;
+    }
+
     // look for known server data
-    char *pHello     = strstr(resp, "\r\n""hello ");
-    char *pConfig    = strstr(resp, "\r\n""config ");
-    char *pStatus    = strstr(resp, "\r\n""status ");
-    char *pHeartbeat = strstr(resp, "\r\n""heartbeat ");
-    char *pError     = strstr(resp, "\r\n""error ");
-    char *pReconnect = strstr(resp, "\r\n""reconnect ");
-    char *pCommand   = strstr(resp, "\r\n""command ");
+    char *pHello     = strstr(sBackendBuf, "\r\n""hello ");
+    char *pConfig    = strstr(sBackendBuf, "\r\n""config ");
+    char *pStatus    = strstr(sBackendBuf, "\r\n""status ");
+    char *pHeartbeat = strstr(sBackendBuf, "\r\n""heartbeat ");
+    char *pError     = strstr(sBackendBuf, "\r\n""error ");
+    char *pReconnect = strstr(sBackendBuf, "\r\n""reconnect ");
+    char *pCommand   = strstr(sBackendBuf, "\r\n""command ");
+
+    // end of lines, may or may not be followed by an incomplete next line (see below)
+    const char *lastCrLf = strrstr(sBackendBuf, "\r\n");
 
     // \r\nhello 87e984 256 clientname\r\n
     if (pHello != NULL)
@@ -247,6 +287,12 @@ BACKEND_STATUS_t backendHandle(char *resp, const int len)
             ERROR("backend: lost heartbeat");
             res = BACKEND_STATUS_FAIL;
         }
+    }
+
+    // keep remaining string in buffer
+    if (lastCrLf != NULL)
+    {
+        strcpy(sBackendBuf, lastCrLf);
     }
 
     return res;

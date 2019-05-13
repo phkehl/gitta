@@ -86,6 +86,7 @@ static esp_err_t sWifiHttpEventHandler(esp_http_client_event_t *pEvent)
                         statusLed(STATUS_LED_HEARTBEAT);
                         break;
                     case BACKEND_STATUS_OKAY:
+                    case BACKEND_STATUS_RXBUF:
                         break;
                     case BACKEND_STATUS_FAIL:
                     case BACKEND_STATUS_RECONNECT:

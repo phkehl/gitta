@@ -38,7 +38,8 @@ static int sTaskSortFunc(const void *a, const void *b)
     const TaskStatus_t *pB = (const TaskStatus_t *)b;
     return (pA->xCoreID != pB->xCoreID) ?
         ((int)pA->xCoreID - (int)pB->xCoreID) :
-        ((int)pA->xTaskNumber - (int)pB->xTaskNumber);
+      //((int)pA->xTaskNumber - (int)pB->xTaskNumber);
+        ((int)pB->uxBasePriority - (int)pA->uxBasePriority);
 
 
 }
