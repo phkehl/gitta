@@ -1,3 +1,7 @@
+# Breaking news
+
+This version is obsolete. Go to the [TschengginsLaempli](https://github.com/phkehl/TschengginsLaempli) repository for the latest and greatest.
+
 # GITTA Tschenggins Lämpli
 
 - Copyright (c) 2018 Philippe Kehl <flipflip at oinkzwurgl dot org>
